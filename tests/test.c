@@ -13,7 +13,7 @@ int main(int argc, char **argv)
 	printf("Hello");
 	printf("Hello");
 	printf("Hello");
-	char *test2 = malloc(NULL);eturn 0;
+	// char *test2 = malloc(NULL);eturn 0;
 
 }
 
