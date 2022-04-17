@@ -1,5 +1,8 @@
 
 // start from here 
+#include "tests.h"
+
+
 
 int main(int argc, char **argv)
 {
@@ -8,8 +11,7 @@ int main(int argc, char **argv)
     {
          if (argv[i] == "--help")
         {
-            printf("%s", "Usage: ./a.out [option]= [exec]\n"); 
-            printf("options: \n");
+             printf("options: \n");
             printf("--help: print this help\n");
             printf("--CheckMem=: check memory errors\n");
             
@@ -20,5 +22,4 @@ int main(int argc, char **argv)
         }
     }
     return 0;
-
 }
