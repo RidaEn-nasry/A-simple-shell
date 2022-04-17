@@ -3,7 +3,7 @@
 NAME = pipex
 
 
-CFLAGS = -Wall -Wextra -Werror 
+CFLAGS = -Wall -Wextra -Werror -g 
 SRCS = ./srcs/main.c
 INCS = -I./includes/
 
@@ -12,7 +12,7 @@ LIB_LIBFT = ../libft/libft.a
 OBJS = $(SRCS:.c=.o)
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c -g $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 
 

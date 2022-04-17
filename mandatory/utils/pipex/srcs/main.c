@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ren-nasr <ren-nasr@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: ren-nasr <ren-nasr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/15 16:21:50 by ren-nasr          #+#    #+#             */
-/*   Updated: 2022/04/17 14:57:05 by ren-nasr         ###   ########.fr       */
+/*   Updated: 2022/04/17 16:11:07 by ren-nasr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,8 @@
 
 
 // a function that takes args and check if the path is a directory
-
+// #define IS_DIR(path) (access(path, F_OK) == 0 && access(path, X_OK) == 0)
+// char  *PATH = "PATH=/goinfre/ren-nasr/.brew/bin:/goinfre/ren-nasr/.brew/bin:/Users/ren-nasr/.nvm/versions/node/v17.6.0/bin:/Users/ren-nasr/goinfre/.brew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/munki:/Library/Frameworks/Mono.framework/Versions/Current/Commands";
 
 
 char *check_exist(t_cmd cmd, t_args *args)
@@ -130,6 +131,12 @@ t_args *init_data(int argc, char **argv, char *PATH)
     
     args->paths = ft_split(PATH, ':');
     
+    // adda argv to each cmd
+    while (i < argc - 1)
+    { 
+        args->cmds[i - 2].cmd = argv[i];
+        i++;
+    }
     // store the commands in the t_cmd struct
     while (i < argc - 1)
     {
@@ -158,9 +165,8 @@ int main(int argc, char **argv, char **env)
     // grap the env varialable PATH from "**env"
     
     char *PATH;
-    
-    
 
+    (void)env;
 
     // args = malloc(sizeof(*args));
     // args->infile = argv[1];
@@ -173,6 +179,7 @@ int main(int argc, char **argv, char **env)
     PATH = NULL;
     while (env[i])
     {
+        // printf("%s\n", env[i]);
         if (ft_strstr(env[i], "PATH"))
         {
             PATH = env[i];
@@ -180,6 +187,7 @@ int main(int argc, char **argv, char **env)
         }
         i++;
     };
+
     if (PATH == NULL)
     {
         write(2, "PATH not found\n", 15);
