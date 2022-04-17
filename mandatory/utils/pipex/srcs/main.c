@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ren-nasr <ren-nasr@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ren-nasr <ren-nasr@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/15 16:21:50 by ren-nasr          #+#    #+#             */
-/*   Updated: 2022/04/17 16:11:07 by ren-nasr         ###   ########.fr       */
+/*   Updated: 2022/04/17 16:35:15 by ren-nasr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,17 +82,17 @@ char *check_exist(t_cmd cmd, t_args *args)
         }
     }
     // check if cmd contains any flags
-    if (ft_strchr(cmd.cmd, '-'))
-    {
-        // add them to flags varialable
-        // check if the flags are valid
-        // if not print an error message
-        // cut the flags from the cmd
-        cmd.flags = ft_strdup(ft_strchr(cmd.cmd, '-'));
-        cmd.cmd = ft_substr(cmd.cmd, 0, ft_strlen(cmd.cmd) - ft_strlen(ft_strchr(cmd.cmd, '-')));
-        printf("%s\n", cmd.flags);
-        printf("%s\n", cmd.cmd);
-    }
+    // if (ft_strchr(cmd.cmd, '-'))
+    // {
+    //     // add them to flags varialable
+    //     // check if the flags are valid
+    //     // if not print an error message
+    //     // cut the flags from the cmd
+    //     cmd.flags = ft_strdup(ft_strchr(cmd.cmd, '-'));
+    //     cmd.cmd = ft_substr(cmd.cmd, 0, ft_strlen(cmd.cmd) - ft_strlen(ft_strchr(cmd.cmd, '-')));
+    //     printf("%s\n", cmd.flags);
+    //     printf("%s\n", cmd.cmd);
+    // }
     while(args->paths[i]){
         // join path with cmd and check if it exist with access()
         tmp = ft_strjoin(args->paths[i], "/");
@@ -137,18 +137,31 @@ t_args *init_data(int argc, char **argv, char *PATH)
         args->cmds[i - 2].cmd = argv[i];
         i++;
     }
+    // print all the cmds
+    i = 0;
+    while (args->cmds[i].cmd)
+    {
+        printf("%s\n", args->cmds[i].cmd);
+        i++;
+    }
     // store the commands in the t_cmd struct
+    i = 0;
     while (i < argc - 1)
     {
         // allocate memory for the cmd
         // cut the flags from the cmd
+        printf(" args->cmds[%d]: %s\n",i, args->cmds[i].cmd);
         if (ft_strchr(args->cmds[i - 2].cmd, '-'))
         {
+            // printf("im here\n");
             args->cmds[i - 2].flags = ft_strdup(ft_strchr(args->cmds[i - 2].cmd, '-'));
+            // printf("flags: %s\n", args->cmds[i - 2].flags);
             args->cmds[i - 2].cmd = ft_substr(args->cmds[i - 2].cmd, 0, ft_strlen(args->cmds[i - 2].cmd) - ft_strlen(ft_strchr(args->cmds[i - 2].cmd, '-')));
+            // printf("cmd: %s\n", args->cmds[i - 2].cmd);
         }
         else 
         {
+            // printf("in heeer\n");
             args->cmds[i - 2].flags = NULL;
             args->cmds[i - 2].cmd = ft_strdup(argv[i]);
         }
@@ -221,7 +234,7 @@ int main(int argc, char **argv, char **env)
         i++;
     }
     // print all commands 
-   for (int i = 1 ; i < argc - 2; i++)
+   for (int i = 0 ; i < argc - 3; i++)
    {
        printf("%s\n", args->cmds[i].cmd);
         // if (args->cmds[i].flags)
