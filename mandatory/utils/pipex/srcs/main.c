@@ -6,7 +6,7 @@
 /*   By: ren-nasr <ren-nasr@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/15 16:21:50 by ren-nasr          #+#    #+#             */
-/*   Updated: 2022/04/19 20:30:02 by ren-nasr         ###   ########.fr       */
+/*   Updated: 2022/04/20 10:28:19 by ren-nasr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,13 +81,14 @@
 //      -> named pipes are created by the mkfifo() system call.
 
 
-// data sent through a pipe is buffered by the kernel meaning that the data is not copied directly from the writer process to the reader process. but whay ? 
-
-// -> heredoc 
+// data sent through a pipe is buffered by the kernel meaning that the data is not copied directly from the writer process to the reader process. but whay ?
+// heredoc is a mechanism that allows you to write a multiline string to stdin 
 
 
 // ========== end of summary ==========
 
+
+// if u find here_doc in 
 char *check_exist(t_cmd cmd, t_args *args)
 {
     int i = 0;
@@ -124,31 +125,72 @@ char *check_exist(t_cmd cmd, t_args *args)
 
 
 
+
+
 t_args *init_data(int argc, char **argv, char *PATH)
 {
     int i = 2;
+    
+
     t_args *args = malloc(sizeof(*args));
+    
+
+    // check_heredoc_thing(args);
+    if (ft_strncmp(argv[1], "here_doc", 8) == 0)
+    {
+        
+        args->limiter = argv[2];
+
+        write(1, "heredoc> ", 9);
+        args->herdoc = true;
+        // read the data in while loop until the limiter is found
+        char *line = get_next_line(0);
+        args->data = ft_strdup("");
+        // args->data 
+        while (line)
+        {
+            // if user enter key return then read his using get_next_line and give the prompt again
+            if (ft_strchr(line, '\r') || ft_strchr(line, '\n'))
+            {
+                write(1, "heredoc> ", 9);
+                args->data = ft_strjoin(args->data, line);
+                free(line);
+                line = get_next_line(0);
+            }
+            if (ft_strncmp(line, args->limiter, ft_strlen(args->limiter)) == 0)
+                break;
+        } 
+
+}
+        
     args->len = argc - 3;
+    int j = 2;
+    if (args->herdoc == true)
+    {
+        args->len = argc - 4;
+        i++;
+        j++;
+    }
+    else 
+        args->infile = argv[1];
 
-    args->cmds = malloc(sizeof(*args->cmds) * args->len);
-
-    args->infile = argv[1];
     args->outfile = argv[argc - 1];
     
+    args->cmds = malloc(sizeof(*args->cmds) * args->len);
     args->paths = ft_split(PATH, ':');
-  
+    
     while (i < argc - 1)
-    { 
-        args->cmds[i - 2].cmd = ft_strdup(argv[i]);
-        if (!ft_strchr(args->cmds[i - 2].cmd, ' '))
+    {         
+        args->cmds[i - j].cmd = ft_strdup(argv[i]);
+        // if only command is given without flags nor spaces;
+        if (!ft_strchr(args->cmds[i - j].cmd, ' '))
         {
-           args->cmds[i - 2].flags = ft_split(argv[i], '\0');
+           args->cmds[i - j].flags = ft_split(argv[i], '\0');
         }
         else
-            args->cmds[i - 2].flags = ft_split(argv[i], ' ');
+            args->cmds[i - j].flags = ft_split(argv[i], ' ');
         i++;
     }
- 
     i = 0;
     while (i < args->len)
     {
@@ -175,7 +217,53 @@ t_args *init_data(int argc, char **argv, char *PATH)
         i++;
     }
     return args;
+
 }
+
+
+void    launch_the_thing(t_args *args, char **env)
+{
+    int i = 0;
+    // int fd[2];
+
+
+    while(i < args->len - 1)
+    {
+    
+        pipe(args->fd);
+
+        if (fork() == 0)
+        {            
+            if (args->pipe != STDIN_FILENO)
+            {
+                dup2(args->pipe, STDIN_FILENO);
+                close(args->pipe);
+            }
+            dup2(args->fd[WRITE_END], STDOUT_FILENO);
+            close(args->fd[WRITE_END]);
+            execve(args->cmds[i].cmd, args->cmds[i].flags, env);
+            perror("execve failed");
+            exit(EXIT_FAILURE);
+        }
+        close(args->pipe);
+        close(args->fd[WRITE_END]);
+        args->pipe = args->fd[READ_END];
+        i++;
+    }
+    int outfile_fd = open(args->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    
+    if (args->pipe != STDIN_FILENO)
+    {
+        dup2(args->pipe, STDIN_FILENO);
+        close(args->pipe);
+    }
+    dup2(outfile_fd, STDOUT_FILENO);
+    execve(args->cmds[i].cmd, args->cmds[i].flags, env);
+    perror("execve failed");
+    waitpid(-1, NULL, 0);
+    exit(EXIT_FAILURE);
+}
+
 
 int main(int argc, char **argv, char **env)
 {
@@ -210,46 +298,26 @@ int main(int argc, char **argv, char **env)
     t_args *args = init_data(argc, argv, PATH);
     
     for (int i = 0; i < args->len; i++)
+       args->cmds[i].cmd = check_exist(args->cmds[i], args);
+ 
+    
+    
+    if (args->herdoc)
     {
-       args->cmds[i].cmd = check_exist(args->cmds[i], args);}
-    int fd[2];
-    
-    int prev_pipe = open("infile", O_RDONLY);
-    
-    while(i < args->len - 1)
+        args->pipe = open("/tmp/heredoc", O_RDWR | O_CREAT | O_TRUNC, 0644);
+        write(args->pipe, args->data, ft_strlen(args->data));
+        dup2(args->pipe, STDIN_FILENO);
+        // dup2(args->pipe, args->fd[READ_END]);
+        // close(args->pipe);
+    }
+    else
     {
-    
-        pipe(fd);
+        args->pipe = open(args->infile, O_RDONLY);
+        // dup2(args->pipe, args->fd[READ_END]);
+        // close(args->pipe);
+    }
         
-        // fork porocess becuase
-        if (fork() == 0)
-        {            
-            if (prev_pipe != STDIN_FILENO)
-            {
-                dup2(prev_pipe, STDIN_FILENO);
-                close(prev_pipe);
-            }
-            dup2(fd[1], STDOUT_FILENO);
-            close(fd[1]);
-            execve(args->cmds[i].cmd, args->cmds[i].flags, env);
-            perror("execve failed");
-            exit(EXIT_FAILURE);
-        }
-        close(prev_pipe);
-        close(fd[1]);
-        prev_pipe = fd[0];
-        i++;
-    }
-    int outfile_fd = open(args->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
     
-    if (prev_pipe != STDIN_FILENO)
-    {
-        dup2(prev_pipe, STDIN_FILENO);
-        close(prev_pipe);
-    }
-    dup2(outfile_fd, STDOUT_FILENO);
-    execve(args->cmds[i].cmd, args->cmds[i].flags, env);
-    perror("execve failed");
-    waitpid(-1, NULL, 0);
-    exit(EXIT_FAILURE);
+    launch_the_thing(args, env);    
+
 }
