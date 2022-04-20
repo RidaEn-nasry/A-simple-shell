@@ -6,7 +6,7 @@
 /*   By: ren-nasr <ren-nasr@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/15 16:21:50 by ren-nasr          #+#    #+#             */
-/*   Updated: 2022/04/20 10:28:19 by ren-nasr         ###   ########.fr       */
+/*   Updated: 2022/04/20 17:05:18 by ren-nasr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,25 @@
 
 // ========== end of summary ==========
 
+int exitIF(int condition, char *message)
+{
+    if (condition)
+    {
+        perror(message);
+        exit(EXIT_FAILURE);
+    }
+    return (0);
+}
+// create a doIF that checks if condition executes actions
+// if condition is true, do actions
+// if condition is false, do nothing
+int doIF(int condition, void (*actions)())
+{
+    if (condition)
+        actions();
+    return (0);
+}
+
 
 // if u find here_doc in 
 char *check_exist(t_cmd cmd, t_args *args)
@@ -105,8 +124,7 @@ char *check_exist(t_cmd cmd, t_args *args)
         write(2, ": Command not found\n", 19); 
         exit(EXIT_FAILURE);        
         }
-    }
-   
+    } 
     while(args->paths[i]){
         // join path with cmd and check if it exist with access()
         tmp = ft_strjoin(args->paths[i], "/");
@@ -121,11 +139,6 @@ char *check_exist(t_cmd cmd, t_args *args)
     exit(EXIT_FAILURE);
 
 }
-
-
-
-
-
 
 t_args *init_data(int argc, char **argv, char *PATH)
 {
@@ -182,7 +195,6 @@ t_args *init_data(int argc, char **argv, char *PATH)
     while (i < argc - 1)
     {         
         args->cmds[i - j].cmd = ft_strdup(argv[i]);
-        // if only command is given without flags nor spaces;
         if (!ft_strchr(args->cmds[i - j].cmd, ' '))
         {
            args->cmds[i - j].flags = ft_split(argv[i], '\0');
@@ -224,15 +236,17 @@ t_args *init_data(int argc, char **argv, char *PATH)
 void    launch_the_thing(t_args *args, char **env)
 {
     int i = 0;
-    // int fd[2];
+    int outfile_fd;
+    pid_t pid;
 
 
     while(i < args->len - 1)
     {
     
         pipe(args->fd);
-
-        if (fork() == 0)
+        
+        exitIF((pid = fork()) == -1, "fork sys call failed");
+        if (pid == 0)
         {            
             if (args->pipe != STDIN_FILENO)
             {
@@ -250,8 +264,9 @@ void    launch_the_thing(t_args *args, char **env)
         args->pipe = args->fd[READ_END];
         i++;
     }
-    int outfile_fd = open(args->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-    
+  
+    outfile_fd = open(args->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    exitIF(outfile_fd == -1, "open sys call failed");
     if (args->pipe != STDIN_FILENO)
     {
         dup2(args->pipe, STDIN_FILENO);
@@ -269,16 +284,12 @@ int main(int argc, char **argv, char **env)
 {
     
     char *PATH;
-
-    (void)env;
-
-     int i;
+    int i;
     
     i = 0;
     PATH = NULL;
     while (env[i])
     {
-        // printf("%s\n", env[i]);
         if (ft_strstr(env[i], "PATH"))
         {
             PATH = env[i];
@@ -286,38 +297,29 @@ int main(int argc, char **argv, char **env)
         }
         i++;
     };
-
-    if (PATH == NULL)
-    {
-        write(2, "PATH not found\n", 15);
-        exit(EXIT_FAILURE);
-    };
-    
-    
+    exitIF(PATH == NULL, "PATH not found");
     i = 0;
     t_args *args = init_data(argc, argv, PATH);
-    
-    for (int i = 0; i < args->len; i++)
-       args->cmds[i].cmd = check_exist(args->cmds[i], args);
- 
-    
+    while (i < args->len)
+    {
+        args->cmds[i].cmd = check_exist(args->cmds[i], args);
+        i++; 
+    }
     
     if (args->herdoc)
     {
         args->pipe = open("/tmp/heredoc", O_RDWR | O_CREAT | O_TRUNC, 0644);
-        write(args->pipe, args->data, ft_strlen(args->data));
-        dup2(args->pipe, STDIN_FILENO);
-        // dup2(args->pipe, args->fd[READ_END]);
-        // close(args->pipe);
+        exitIF(args->pipe == -1 , "open() sys call failed");
+        exitIF(write(args->pipe, args->data, ft_strlen(args->data)) != (ssize_t)ft_strlen(args->data), "write() sys call failed");
+        close(args->pipe);
+        args->pipe = open("/tmp/heredoc", O_RDONLY);
+        exitIF(args->pipe == -1, "open() sys call failed");
     }
-    else
+    else 
     {
         args->pipe = open(args->infile, O_RDONLY);
-        // dup2(args->pipe, args->fd[READ_END]);
-        // close(args->pipe);
+        exitIF(args->pipe == -1, "open() sys call failed");
     }
-        
-    
     launch_the_thing(args, env);    
 
 }

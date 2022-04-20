@@ -9,6 +9,10 @@ INCS = -I./includes/
 
 LIB_LIBFT_PATH = ../libft/
 LIB_LIBFT = ../libft/libft.a
+GNL = ../get_next_line/get_next_line.c ../get_next_line/get_next_line_utils.c
+
+
+
 OBJS = $(SRCS:.c=.o)
 
 %.o: %.c
@@ -20,13 +24,10 @@ all: $(NAME)
 
 
 $(NAME): $(OBJS)
-	@$(CC) $(OBJS) $(LIB_LIBFT) -o $@ $(INCS) 
+	@$(CC) $(OBJS) $(LIB_LIBFT) $(GNL) -o $@ $(INCS) 
 
 clean:
 	@$(RM) $(OBJS)
-
-
-
 
 
 

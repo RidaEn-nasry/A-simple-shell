@@ -1,17 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   test.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ren-nasr <ren-nasr@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/04/20 17:25:58 by ren-nasr          #+#    #+#             */
-/*   Updated: 2022/04/20 17:51:08 by ren-nasr         ###   ########.fr       */
+/*   Created: 2022/04/20 11:47:02 by ren-nasr          #+#    #+#             */
+/*   Updated: 2022/04/20 12:37:17 by ren-nasr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../utils/get_next_line/get_next_line.h"
-#include <stdio.h>
+#include "../includes/pipex.h"
 
-
-// command table structure
+int	main(void)
+{
+	EXITIF(1 != 2 && 1 != 2, "test");
+	return (0);
+}

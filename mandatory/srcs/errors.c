@@ -1,17 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   errors.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ren-nasr <ren-nasr@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/04/20 17:25:58 by ren-nasr          #+#    #+#             */
-/*   Updated: 2022/04/20 17:51:08 by ren-nasr         ###   ########.fr       */
+/*   Created: 2022/04/20 17:27:56 by ren-nasr          #+#    #+#             */
+/*   Updated: 2022/04/20 18:00:49 by ren-nasr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../utils/get_next_line/get_next_line.h"
-#include <stdio.h>
+#include "../includes/minishell.h"
 
-
-// command table structure
+int exitIf(int condition, char *message)
+{
+    if (condition)
+    {
+        perror(message);
+        exit(EXIT_FAILURE);
+    }
+    return (0);
+}

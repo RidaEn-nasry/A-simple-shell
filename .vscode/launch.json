@@ -1,0 +1,19 @@
+{
+  // debug c executable using lldb debugger
+  "configurations": [
+      {
+        "type": "lldb",
+        "request": "launch",
+        "name": "Launch LLDB Debugger",
+        "program": "/Users/wa5ina/42/minishell/mandatory/utils/pipex/pipex",
+        "args": ["here_doc","EOF", "grep ipsum" , "wc -l", "outfile"],
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}",
+        "environment": [],
+        "externalConsole": true,
+        "MIMode": "lldb",
+      }
+
+    ],
+
+}
