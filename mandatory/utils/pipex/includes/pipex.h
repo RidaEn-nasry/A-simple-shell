@@ -6,7 +6,7 @@
 /*   By: ren-nasr <ren-nasr@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/15 20:13:14 by ren-nasr          #+#    #+#             */
-/*   Updated: 2022/04/20 17:00:08 by ren-nasr         ###   ########.fr       */
+/*   Updated: 2022/04/20 20:25:40 by ren-nasr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,6 @@
 # define PIPEX_H
 
 #include "../../libft/libft.h"
-
-
-// # define EXITIF(cond , msg) if (cond) { perror(msg); exit(EXIT_FAILURE); }
-// # define DOIF(cond, action) if (cond) { action; }
 
 #include <unistd.h>
 #include <stdlib.h>

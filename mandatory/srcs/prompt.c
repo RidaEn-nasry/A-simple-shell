@@ -6,31 +6,26 @@
 /*   By: ren-nasr <ren-nasr@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 17:25:49 by ren-nasr          #+#    #+#             */
-/*   Updated: 2022/04/20 17:49:13 by ren-nasr         ###   ########.fr       */
+/*   Updated: 2022/04/20 21:34:48 by ren-nasr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-// diplay prompt
-void prompt(void)
+int main(int argc, char **argv)
 {
-    char *user;
-    char *host;
-    char *cwd;
+    // match argv with regex 
+    // if match, call function
+    // else, print error message
+    if (argc == 1)
+    {
+        //check if it conatains [a-zA-Z0-9_]
+        // if yes, call function
+        // else, print error message
+        if (argv[0] == [a-zA-Z0-9_])
+        {
+            
+        }
 
-    user = getenv("USER");
-    host = getenv("HOSTNAME");
-    cwd = getcwd(NULL, 0);
-    if (user == NULL || host == NULL || cwd == NULL)
-        return ;
-    ft_putstr("\033[1;32m");
-    ft_putstr(user);
-    ft_putstr("\033[0m@");
-    ft_putstr("\033[1;32m");
-    ft_putstr(host);
-    ft_putstr("\033[0m:");
-    ft_putstr("\033[1;32m");
-    ft_putstr(cwd);
-    ft_putstr("\033[0m$ ");
+    }
 }
