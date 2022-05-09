@@ -6,7 +6,7 @@
 /*   By: ren-nasr <ren-nasr@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 17:25:58 by ren-nasr          #+#    #+#             */
-/*   Updated: 2022/05/05 12:21:29 by ren-nasr         ###   ########.fr       */
+/*   Updated: 2022/05/09 10:13:51 by ren-nasr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,19 +35,23 @@
 
 
 // These are special operators and their corresponding token
+#define CMD "<cmd> "
+#define PIPE "<pp> " // |
+#define OUT "<out> "  // >
+#define IN "<in> "   // <
+#define HEREDOC "<hd> " // << 
+#define APPEND "<ap> " // >>
+#define VAR "<var> " // $
+#define DQUOTE "<dq> " // "
+#define SQUOTE "<sq> " // '
+#define BQUOTE "<bq> " // `
+#define SEMICOLON "<sc> " // ;
+#define AND "<and> " // &&
+#define OR "<or> " // ||
 
-#define PIPE "<pp>" // |
-#define OUT "<out>"  // >
-#define IN "<in>"   // <
-#define HEREDOC "<hd>" // << 
-#define APPEND "<ap>" // >>
-#define VAR "<var>" // $
-#define DQUOTE "<dq>" // "
-#define SQUOTE "<sq>" // '
-#define BQUOTE "<bq>" // `
-#define SEMICOLON "<sc>" // ;
-#define AND "<and>" // &&
-#define OR "<or>" // ||
+
+
+
 
 
 
@@ -67,11 +71,21 @@ typedef struct s_cmd
     struct s_cmd *next;
 } t_cmd;
 
-typedef struct t_data{
+
+typedef struct s_env {
+    char **env;
+    int index;
+} t_env;
+
+
+typedef struct s_data {
     t_cmd *cmds;
     char *tokens;
-    char *out;
+    char **out;
     char *in;
+    char *delim;
+    t_env *env;
+    void (*free)(int, t_data *, char *);
 } t_data;
 
 
@@ -81,5 +95,9 @@ typedef struct t_data{
 t_cmd *add_node(t_cmd *cmds, char *cmd, char **args);
 
 
+char *cmd_exist(char *cmd);
+
+// Error handling :
 int exitIF(int , char *);
+void    exitFreeIF(int condition, t_data *data, char *msg);
 
