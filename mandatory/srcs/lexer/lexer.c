@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ren-nasr <ren-nasr@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: yelgharo <yelgharo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 20:38:43 by ren-nasr          #+#    #+#             */
-/*   Updated: 2022/05/09 10:10:36 by ren-nasr         ###   ########.fr       */
+/*   Updated: 2022/05/09 10:53:09 by yelgharo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 #include <readline/history.h>
 #include <readline/readline.h>
+#include "../../includes/minishell.h"
 
 
     
@@ -30,7 +31,6 @@
  
 
 
-#include "../../includes/minishell.h"
 /* 
     -> analyzing the problem : 
         - the lexer will take the given string and create tokens out of it.

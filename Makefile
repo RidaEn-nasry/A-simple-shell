@@ -25,8 +25,8 @@ $(TARGET): ${OBJS}
 
 
 clean:
-		$(MAKE) -C $(LIBFT_PATH) clean
-		${RM} ${OBJS}
+	$(MAKE) -C $(LIBFT_PATH) clean
+	${RM} ${OBJS}
 
 fclean: clean
 	${RM} ${TARGET}

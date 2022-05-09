@@ -3,14 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ren-nasr <ren-nasr@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: yelgharo <yelgharo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 17:25:58 by ren-nasr          #+#    #+#             */
-/*   Updated: 2022/05/05 12:21:29 by ren-nasr         ###   ########.fr       */
+/*   Updated: 2022/05/09 11:02:50 by yelgharo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../utils/get_next_line/get_next_line.h"
 #include "../utils/libft/libft.h"
 #include <unistd.h>
 #include <stdio.h>
@@ -52,11 +51,11 @@
 
 
 
-typedef struct s_AST {
+typedef struct s_ast {
     char *token;
-    struct s_AST *left;
-    struct s_AST *right;
-} t_AST;
+    struct s_ast *left;
+    struct s_ast *right;
+} t_ast;
 
 
 typedef struct s_cmd
@@ -67,11 +66,13 @@ typedef struct s_cmd
     struct s_cmd *next;
 } t_cmd;
 
-typedef struct t_data{
+typedef struct s_data{
     t_cmd *cmds;
     char *tokens;
-    char *out;
+    char **out;
     char *in;
+	void (*free)(int cond, t_data *, char *msg);
+	char *delim;
 } t_data;
 
 
