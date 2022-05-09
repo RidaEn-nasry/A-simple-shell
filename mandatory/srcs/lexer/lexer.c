@@ -6,7 +6,7 @@
 /*   By: ren-nasr <ren-nasr@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 20:38:43 by ren-nasr          #+#    #+#             */
-/*   Updated: 2022/05/08 17:20:06 by ren-nasr         ###   ########.fr       */
+/*   Updated: 2022/05/09 10:10:36 by ren-nasr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,8 @@ char *cmd_exist(char *cmd)
 t_data *init_data(t_data *data)
 {
     data = malloc(sizeof(*data));
+    // functions 
+    data->free = exitFreeIF;
     // cmd linked list : 
     data->cmds = malloc(sizeof(*data->cmds)); 
     data->cmds->next = NULL;
@@ -185,15 +187,15 @@ void    handle_cmd(t_data *data, char *line, int *i)
     // check if cmd is valid
     
     tmp->cmd = cmd_exist(tmp->cmd);
-    if (!tmp->cmd)
-        exitFree(data, "command not found");
+    data->free(!tmp->cmd, data, "command not found");
     current = data->cmds;
     while (current->next)
         current = current->next;
     current = tmp;
     current->next = NULL;
     // tokonize the cmd
-    data->tokens = ft_strjoin(data->tokens, "<cmd> ");
+    data->tokens = ft_strjoin(data->tokens, CMD);
+    data->free(!data->tokens, data, "allocation failed");
     index += (ft_strchr(&line[index], ' ') - line - index);
     // printf("%s\n", current->cmd);
     // printf("before : %d\n", index);
@@ -205,24 +207,23 @@ void    handle_cmd(t_data *data, char *line, int *i)
     {
         // get flag 
         current->args = malloc(sizeof(*tmp->args) * 2);
-        if (!current->args)
-            exitFree(data, "allocation failed");
         current->args[0] = ft_substr(line, index, index + (ft_strchr(&line[index], ' ') - line - index));
+        exitFreeIF(!current->args || !current->args[0], data, "allocation failed");
         current->args[1] = NULL;
         index += (ft_strchr(&line[index], ' ') - line - index);
     }
     else
     {
         current->args = malloc(sizeof(*tmp->args) * 1);
-        exitFree(data, "allocation failed");
+        exitFreeIF(!current->args, data, "allocation failed");
         current->args[0] = NULL;
     }
-    if (current->cmd)
-        printf("%s\n", current->cmd);
-    if (current->args[0])
-        printf("%s\n", current->args[0]);
-    if (data->tokens)
-        printf("%s\n", data->tokens);
+    // if (current->cmd)
+    //     printf("%s\n", current->cmd);
+    // if (current->args[0])
+    //     printf("%s\n", current->args[0]);
+    // if (data->tokens)
+    //     printf("%s\n", data->tokens);
     *i = index;
     
 }
@@ -245,6 +246,7 @@ void lexer(char *line)
     
     t_data *data = NULL;
     data = init_data(data);
+    char *tmp;
     
     int i = 0;
     while (line[i])
@@ -266,15 +268,32 @@ void lexer(char *line)
         }
         else if (getState(line[i], line[i + 1]) == 3)
         {
-            // handle >> , state 3
-            
+            // handle << , state 3
+            tmp = ft_substr(line, i, i + (ft_strchr(&line[i], ' ') - line - i));
+            // printf("tmp : %s len is %zu\n", tmp, ft_strlen(tmp));
+            if (ft_strlen(tmp) > 2)
+            {
+                
+                data->delim = ft_substr(line, i + 2, i + (ft_strchr(&line[i], ' ') - line - i));
+                exitFreeIF(!data->delim, data, "allocation failed");
+                i += (ft_strchr(&line[i], ' ') - line - i);  
+            }
+            else{
+                i += ft_strchr(&line[i], ' ') - line - i;
+                i = skip_space(line, &i);
+                data->delim = ft_substr(line, i, i + (ft_strchr(&line[i], ' ') - line - i));
+                exitFreeIF(!data->delim, data, "allocation failed");
+                i += (ft_strchr(&line[i], ' ') - line - i);
+            }
+            data->tokens = ft_strjoin(data->tokens, HEREDOC);
+            data->free(!data->tokens, data, "allocation failed");
+
             
         }
         else if (getState(line[i], line[i + 1] == 4))
         {
-            // handle << , state 4 , what's called heredoc
-           
-            // data->tokens = ft_strjoin(data->tokens, "<hd> ");
+            // handle >> , state 4 , what's called heredoc
+        
            
             
         }
@@ -311,6 +330,7 @@ void lexer(char *line)
         else 
             i++;
     }
+    printf("%s\n", data->tokens);
 }
 
 
