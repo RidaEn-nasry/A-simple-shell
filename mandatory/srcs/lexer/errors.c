@@ -6,7 +6,7 @@
 /*   By: ren-nasr <ren-nasr@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:59:49 by ren-nasr          #+#    #+#             */
-/*   Updated: 2022/05/09 15:20:38 by ren-nasr         ###   ########.fr       */
+/*   Updated: 2022/05/09 16:53:27 by ren-nasr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,10 +54,8 @@ void    exitFreeIF(int condition, t_data * data,  char *msg)
         ft_safeFree(data->files->out[i]);
         i++;
     }
-    
     free(data);
-    printf("%s\n", msg);
-    perror(msg);
+    ft_putendl_fd(msg, 2);
     exit(EXIT_FAILURE);
     }
 }

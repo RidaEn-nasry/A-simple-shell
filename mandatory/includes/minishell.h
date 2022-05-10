@@ -6,9 +6,12 @@
 /*   By: ren-nasr <ren-nasr@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 17:25:58 by ren-nasr          #+#    #+#             */
-/*   Updated: 2022/05/09 10:13:51 by ren-nasr         ###   ########.fr       */
+/*   Updated: 2022/05/10 14:45:32 by ren-nasr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#ifndef MINISHELL_H
+# define MINISHELL_H
 
 #include "../utils/get_next_line/get_next_line.h"
 #include "../utils/libft/libft.h"
@@ -78,14 +81,18 @@ typedef struct s_env {
 } t_env;
 
 
+typedef struct s_files {
+    char *in;
+    char **out;
+} t_files;
+
 typedef struct s_data {
     t_cmd *cmds;
     char *tokens;
-    char **out;
-    char *in;
+    t_files *files;
     char *delim;
     t_env *env;
-    void (*free)(int, t_data *, char *);
+    void (*free)(int, struct s_data *, char *);
 } t_data;
 
 
@@ -95,9 +102,29 @@ typedef struct s_data {
 t_cmd *add_node(t_cmd *cmds, char *cmd, char **args);
 
 
+int    skip_space(char *s, int *i);
+
 char *cmd_exist(char *cmd);
 
 // Error handling :
-int exitIF(int , char *);
+int     exitIF(int , char *);
 void    exitFreeIF(int condition, t_data *data, char *msg);
 
+
+
+/* 
+** lexer 
+*/
+// state machine
+int getState(char c, char c1);
+
+// lexer handlers
+void    handle_delim(t_data *data, char *line, int *i);
+void    handle_cmd(t_data *data, char *line, int *i);
+void    handle_app(t_data *data, char *line, int *i);
+
+
+// data initialization
+t_data *init_data(t_data *data);
+
+#endif  

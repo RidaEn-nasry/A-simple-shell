@@ -6,7 +6,7 @@
 /*   By: ren-nasr <ren-nasr@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 20:38:43 by ren-nasr          #+#    #+#             */
-/*   Updated: 2022/05/09 10:10:36 by ren-nasr         ###   ########.fr       */
+/*   Updated: 2022/05/10 17:46:24 by ren-nasr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,32 +94,8 @@ char *cmd_exist(char *cmd)
 }
 
 
-t_data *init_data(t_data *data)
-{
-    data = malloc(sizeof(*data));
-    // functions 
-    data->free = exitFreeIF;
-    // cmd linked list : 
-    data->cmds = malloc(sizeof(*data->cmds)); 
-    data->cmds->next = NULL;
-    
-    data->tokens = malloc(sizeof(*data->tokens));
-    data->env = malloc(sizeof(*data->env));
-    data->env->index = 0;
-    data->env->env = malloc(sizeof(*data->env->env));
-    exitIF(!data || !data->cmds || !data->tokens || !data->env \
-        || !data->env->env, "allocation failed");
-    return (data);
-}
 
-int    skip_space(char *s, int *i)
-{
-    int index = *i;
-    while (ft_isspace(s[index]))
-        index++;
-    *i = index;
-    return index;
-}
+
 
 int getState(char c, char c1)
 {
@@ -153,80 +129,7 @@ int getState(char c, char c1)
 
 
 
-void    handle_cmd(t_data *data, char *line, int *i)
-{
-    /*
-        Pseudo code :
-            -> get cmd.
-                -> if cmd is valid.
-                    -> if flag is set.
-                        -> get flag.
-                            -> if flag is valid.
-                                -> store cmd.
-                                -> store flag.
-                                -> tokonize the cmd and flag.
-                    -> else:
-                        -> error.
-                        -> exit.
-                    -> else:
-                        -> store cmd.
-                        -> tokonize the cmd.
-                -> else:
-                    -> error.
-                    -> exit.
-    */
-   // move to the last node of the cmd linked list.
-   
-    t_cmd *tmp = malloc(sizeof(*tmp));
-    t_cmd *current;
-    int index = *i;
-     
 
-    tmp->cmd = ft_substr(line, index, index + (ft_strchr(&line[index], ' ') - line - index));
-    
-    // check if cmd is valid
-    
-    tmp->cmd = cmd_exist(tmp->cmd);
-    data->free(!tmp->cmd, data, "command not found");
-    current = data->cmds;
-    while (current->next)
-        current = current->next;
-    current = tmp;
-    current->next = NULL;
-    // tokonize the cmd
-    data->tokens = ft_strjoin(data->tokens, CMD);
-    data->free(!data->tokens, data, "allocation failed");
-    index += (ft_strchr(&line[index], ' ') - line - index);
-    // printf("%s\n", current->cmd);
-    // printf("before : %d\n", index);
-    index = skip_space(line, &index);
-    // printf("%d, after\n", index);
-    
-    // check if flag is set 
-    if (line[index] == '-' || getState(line[index], line[index + 1]) == 1)
-    {
-        // get flag 
-        current->args = malloc(sizeof(*tmp->args) * 2);
-        current->args[0] = ft_substr(line, index, index + (ft_strchr(&line[index], ' ') - line - index));
-        exitFreeIF(!current->args || !current->args[0], data, "allocation failed");
-        current->args[1] = NULL;
-        index += (ft_strchr(&line[index], ' ') - line - index);
-    }
-    else
-    {
-        current->args = malloc(sizeof(*tmp->args) * 1);
-        exitFreeIF(!current->args, data, "allocation failed");
-        current->args[0] = NULL;
-    }
-    // if (current->cmd)
-    //     printf("%s\n", current->cmd);
-    // if (current->args[0])
-    //     printf("%s\n", current->args[0]);
-    // if (data->tokens)
-    //     printf("%s\n", data->tokens);
-    *i = index;
-    
-}
 // <in> <cmd ls -al> <pipe> <cmd cat> <pipe> <cmd wc -la> <out> 
 
         // if char is a space go to state 0
@@ -238,7 +141,7 @@ void    handle_cmd(t_data *data, char *line, int *i)
         // - if char is a '|', go to state 5
         // - if char is a quote go to state 6
         // - if char is a '$', go to state 8
-
+  
 
 
 void lexer(char *line)
@@ -246,7 +149,7 @@ void lexer(char *line)
     
     t_data *data = NULL;
     data = init_data(data);
-    char *tmp;
+
     
     int i = 0;
     while (line[i])
@@ -258,7 +161,7 @@ void lexer(char *line)
         else if (getState(line[i], line[i + 1]) == 1)
         {
             // don't forget to handle flag.
-             handle_cmd(data, line, &i);
+            handle_cmd(data, line, &i);
         }
         else if (getState(line[i], line[i + 1]) == 2)
         {
@@ -269,33 +172,19 @@ void lexer(char *line)
         else if (getState(line[i], line[i + 1]) == 3)
         {
             // handle << , state 3
-            tmp = ft_substr(line, i, i + (ft_strchr(&line[i], ' ') - line - i));
-            // printf("tmp : %s len is %zu\n", tmp, ft_strlen(tmp));
-            if (ft_strlen(tmp) > 2)
-            {
-                
-                data->delim = ft_substr(line, i + 2, i + (ft_strchr(&line[i], ' ') - line - i));
-                exitFreeIF(!data->delim, data, "allocation failed");
-                i += (ft_strchr(&line[i], ' ') - line - i);  
-            }
-            else{
-                i += ft_strchr(&line[i], ' ') - line - i;
-                i = skip_space(line, &i);
-                data->delim = ft_substr(line, i, i + (ft_strchr(&line[i], ' ') - line - i));
-                exitFreeIF(!data->delim, data, "allocation failed");
-                i += (ft_strchr(&line[i], ' ') - line - i);
-            }
-            data->tokens = ft_strjoin(data->tokens, HEREDOC);
-            data->free(!data->tokens, data, "allocation failed");
-
-            
+            handle_delim(data, line, &i);
         }
         else if (getState(line[i], line[i + 1] == 4))
         {
-            // handle >> , state 4 , what's called heredoc
-        
-           
-            
+                // handle >> , state 4 
+                handle_app(data, line, &i);
+                // printf("len: %zu\n", ft_doublen((const char **)data->files->out));
+                // printf("out[1]: %s\n", data->files->out[1]);
+                // for (size_t i = 0; i < ft_doublen((const char **)data->files->out); i++)
+                // {
+                //     printf("%s\n", data->files->out[i]);
+                // }
+                
         }
         else if (getState(line[i], line[i + 1] == 5))
         {
@@ -332,8 +221,6 @@ void lexer(char *line)
     }
     printf("%s\n", data->tokens);
 }
-
-
 
 
 
