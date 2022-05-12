@@ -6,7 +6,7 @@
 /*   By: ren-nasr <ren-nasr@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/12 11:27:45 by ren-nasr          #+#    #+#             */
-/*   Updated: 2022/05/12 14:45:24 by ren-nasr         ###   ########.fr       */
+/*   Updated: 2022/05/12 16:25:54 by ren-nasr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ t_cmd	*new_node(t_data *data)
 	return (new);
 }
 
-t_cmd	*add_node(t_data *data, char *name, char *args)
+t_cmd	*add_node(t_data *data, char *name, char **args)
 {
 	t_cmd	*tmp;
 
@@ -59,11 +59,11 @@ t_cmd	*add_node(t_data *data, char *name, char *args)
 	}
 }
 
-char	*get_args(char *s, size_t *index)
+char	**get_args(char *s, size_t *index, char *cmd)
 {
 	int		i;
 	size_t	end;
-	char	*tmp;
+	char	**tmp;
 
 	skip_space(s, index);
 	if (!s)
@@ -72,8 +72,11 @@ char	*get_args(char *s, size_t *index)
 	i = *index;
 	if (s[i] && (ft_isalnum(s[i]) || s[i] == '-'))
 	{
+		tmp = malloc(sizeof(char *) * 3);
 		next_cmd(s, &end);
-		tmp = ft_substr(s, i, end);
+		tmp[0] = cmd;
+		tmp[1] = ft_substr(s, i, end);
+		tmp[2] = NULL;
 		*index = end;
 		return (tmp);
 	}
@@ -86,7 +89,7 @@ bool	handle_cmd(t_data *data, char *line, size_t *i)
 	char	*tmp;
 	size_t	index;
 	size_t	end;
-	char	*args;
+	char	**args;
 
 	index = *i;
 	end = index;
@@ -100,7 +103,8 @@ bool	handle_cmd(t_data *data, char *line, size_t *i)
 		return (false);
 	}
 	index = end;
-	args = get_args(line, &index);
+	args = get_args(line, &index, ft_substr(tmp, \
+		ft_strrchr(tmp, '/') - tmp + 1, ft_strlen(tmp)));
 	data->cmds = add_node(data, tmp, args);
 	data->tokens = ft_strjoin(data->tokens, CMD);
 	exit_free_if(!data->tokens, data, "allocation failed");

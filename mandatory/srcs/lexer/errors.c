@@ -6,7 +6,7 @@
 /*   By: ren-nasr <ren-nasr@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:59:49 by ren-nasr          #+#    #+#             */
-/*   Updated: 2022/05/09 16:53:27 by ren-nasr         ###   ########.fr       */
+/*   Updated: 2022/05/12 16:23:37 by ren-nasr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@ void freeAST(t_AST *ast)
 }
  
  
-
-void    exitFreeIF(int condition, t_data * data,  char *msg)
+// should be reacreated.
+void     free_if(int condition, t_data * data,  char *msg)
 {
     t_cmd *tmp;
     int i;
@@ -38,25 +38,37 @@ void    exitFreeIF(int condition, t_data * data,  char *msg)
         tmp = data->cmds->next;
         tmp = data->cmds;
         data->cmds = data->cmds->next;
-        ft_safeFree(tmp->cmd);
-        if (tmp->args)
+        ft_sfree(tmp->cmd);
+        if (tmp->args && tmp->args[0])
             while (tmp->args[i])
             {
-                ft_safeFree(tmp->args[i]);
+                ft_sfree(tmp->args[i]);
                 i++;
-            }
-        ft_safeFree(tmp->args);
+            } 
+        ft_sfree(tmp->args);
         free(tmp);
     }
-    ft_safeFree(data->tokens);
-    while (data->files->out[i])
-    {
-        ft_safeFree(data->files->out[i]);
-        i++;
+    ft_sfree(data->tokens);
+    if (data->files->out)
+        while (data->files->out[i])
+        {
+            ft_sfree(data->files->out[i]);
+            i++;
     }
+    ft_sfree(data->files);
     free(data);
-    ft_putendl_fd(msg, 2);
-    exit(EXIT_FAILURE);
+    if (msg)
+        ft_putendl_fd(msg, 2);
     }
+}
+
+void    exit_free_if(int condition, t_data * data,  char *msg)
+{  
+    if (condition)
+    {
+        free_if(condition, data, msg);
+        exit(EXIT_FAILURE);
+    }
+
 }
 

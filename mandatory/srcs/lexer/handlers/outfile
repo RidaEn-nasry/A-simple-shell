@@ -1,0 +1,14 @@
+total 176
+drwxr-xr-x  13 wa5ina  staff    416 May 12 16:26 .
+drwxr-xr-x  10 wa5ina  staff    320 May 12 16:23 ..
+-rwxr-xr-x   1 wa5ina  staff  33554 May 12 16:10 a.out
+-rw-r--r--   1 wa5ina  staff   3677 May 12 16:32 append_in.c
+-rw-r--r--   1 wa5ina  staff   5792 May 12 15:37 append_in.o
+-rw-r--r--   1 wa5ina  staff   2714 May 12 16:25 cmds.c
+-rw-r--r--   1 wa5ina  staff   6848 May 12 16:21 cmds.o
+-rw-r--r--   1 wa5ina  staff   3226 May 12 11:53 delim.c
+-rw-r--r--   1 wa5ina  staff   6056 May 12 15:32 delim.o
+-rw-r--r--   1 wa5ina  staff   1650 May 12 15:12 env.c
+-rw-r--r--   1 wa5ina  staff   4272 May 12 15:32 env.o
+-rw-r--r--@  1 wa5ina  staff      0 May 12 16:34 outfile
+-rw-r--r--   1 wa5ina  staff    161 May 12 16:10 test.c

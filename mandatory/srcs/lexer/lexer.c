@@ -6,7 +6,7 @@
 /*   By: ren-nasr <ren-nasr@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 20:38:43 by ren-nasr          #+#    #+#             */
-/*   Updated: 2022/05/10 17:46:24 by ren-nasr         ###   ########.fr       */
+/*   Updated: 2022/05/12 16:38:47 by ren-nasr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,7 +151,7 @@ void lexer(char *line)
     data = init_data(data);
 
     
-    int i = 0;
+    size_t i = 0;
     while (line[i])
     {
         if (getState(line[i], line[i + 1]) == 0)
@@ -161,12 +161,12 @@ void lexer(char *line)
         else if (getState(line[i], line[i + 1]) == 1)
         {
             // don't forget to handle flag.
-            handle_cmd(data, line, &i);
+           if (!handle_cmd(data, line, &i))
+                return;
         }
         else if (getState(line[i], line[i + 1]) == 2)
         {
             // handle quote, state 2
-            
             
         }
         else if (getState(line[i], line[i + 1]) == 3)
@@ -174,52 +174,87 @@ void lexer(char *line)
             // handle << , state 3
             handle_delim(data, line, &i);
         }
-        else if (getState(line[i], line[i + 1] == 4))
+        else if (getState(line[i], line[i + 1])==4)
         {
-                // handle >> , state 4 
-                handle_app(data, line, &i);
-                // printf("len: %zu\n", ft_doublen((const char **)data->files->out));
-                // printf("out[1]: %s\n", data->files->out[1]);
-                // for (size_t i = 0; i < ft_doublen((const char **)data->files->out); i++)
-                // {
-                //     printf("%s\n", data->files->out[i]);
-                // }
-                
+                // handle >> , state 4  
+                // printf(">>\n"); 
+                // printf("%c | %c", line[i], line[i + 1]);
+                if (!handle_app(data, line, &i))
+                    return;
+
         }
-        else if (getState(line[i], line[i + 1] == 5))
+        else if (getState(line[i], line[i + 1]) == 5)
         {
+            
+            if (!handle_delim(data, line, &i))
+                return;
             // handle < , state 5
         }
-        else if (getState(line[i], line[i + 1] == 6))
+        else if (getState(line[i], line[i + 1]) == 6)
         {
+            if (!handle_app(data, line, &i))
+                return;
             // handle > , state 6
+            
         }
         else if (getState(line[i], line[i + 1]) == 7)
         {
             // handle || , state 7
+            
         }
-        else if (getState(line[i], line[i + 1] == 8))
+        else if (getState(line[i], line[i + 1]) == 8)
         {
             // handle | , state 7
+            data->tokens = ft_strjoin(data->tokens, PIPE);
+            exit_free_if(!data->tokens, data, "allocation failed");
+            i++;
         }  
-        else if (getState(line[i], line[i + 1] == 9))
+        else if (getState(line[i], line[i + 1]) == 9)
         {
             // hanle state && , state 8
         }
         
-        else if (getState(line[i], line[i + 1] == 10))
+        else if (getState(line[i], line[i + 1]) == 10)
         {
             // handle $? , state 10
+            // printf("$?\n");
+            handle_env(data, line, &i);
             
         }
-        else if (getState(line[i], line[i + 1] == 11))
+        else if (getState(line[i], line[i + 1]) == 11)
         {
             // handle $ , state 11
+            handle_env(data, line, &i);
         }
         else 
             i++;
     }
+    // for (int i = 0; data->files->out[i]; i++)
+    // {
+    //     printf("%s\n", data->files->out[i]);
+    // }
     printf("%s\n", data->tokens);
+   
+    // printf("length: %zu\n", ft_doublen((const char **)data->files->out));
+    printf("len : %zu\n", ll_len(data->cmds));
+    
+    t_cmd *cmd = data->cmds;
+    while (cmd)
+    {
+        printf("last cmds: %s\n", cmd->cmd);
+        cmd = cmd->next;
+    }
+    t_cmd *cmd2 = data->cmds;
+    while (cmd2)
+    {
+        if (cmd2->args)
+        
+            for (int i = 0; cmd2->args[i]; i++)
+            {
+                printf("%s\n", cmd2->args[i]);
+            }
+        cmd2 = cmd2->next;
+    }
 }
 
 
@@ -228,10 +263,10 @@ int main(void)
 {
     // lexer(argc, argv);
     // print all arguments
-    
+    char *line;
     while(1)
     {
-        char *line = readline("$> ");
+        line = readline("$> ");
         if (line == NULL)
             break;
         add_history(line);
