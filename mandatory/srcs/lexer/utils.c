@@ -39,38 +39,41 @@ size_t  ll_len(t_cmd *cmd)
 
 }
 
-t_data *init_data(t_data *data)
+t_shell *init_data(t_shell *shell)
 {
-    data = malloc(sizeof(*data));
+    shell = malloc(sizeof(*shell));
     // functions 
     // cmd linked list :
-    // empty linked list checked by data->cmds->cmd != NULL
-    data->cmds = NULL;
+    // empty linked list checked by shell->cmds->cmd != NULL
+    shell->cmds = NULL;
     
 
-    // data->cmds->next = NULL; 
+    // shell->cmds->next = NULL; 
 
     
-    data->tokens = malloc(sizeof(*data->tokens));
+    shell->tokens = malloc(sizeof(*shell->tokens));
 
 
     // env stuff.
-    data->env = malloc(sizeof(*data->env));
-    data->env[0] = NULL;
+    shell->env = malloc(sizeof(*shell->env));
+    shell->env[0] = NULL;
     // files : 
-    data->files = malloc(sizeof(*data->files));
-    data->files->out = NULL;
+    shell->files = malloc(sizeof(*shell->files));
+    shell->files->out = NULL;
+    shell->files->in = NULL;
 
+
+    shell->delim = NULL;
     // cmds stuff
-    // data->cmds->args = NULL;
-    // data->files = NULL;
-    // data->files->out = malloc(sizeof(*data->files->out) * 1);
-    // data->files->out[0] = NULL;
-    // data->files->out[0] = ft_strdup(" "); 
-    // printf("len %zu\n", ft_doublen((const char **)data->files->out));
-    exitIF(!data || !data->tokens || !data->env \
-        || !data->env || !data->files, "allocation failed");
-    return (data);
+    // shell->cmds->args = NULL;
+    // shell->files = NULL;
+    // shell->files->out = malloc(sizeof(*shell->files->out) * 1);
+    // shell->files->out[0] = NULL;
+    // shell->files->out[0] = ft_strdup(" "); 
+    // printf("len %zu\n", ft_doublen((const char **)shell->files->out));
+    exitIF(!shell || !shell->tokens || !shell->env \
+        || !shell->env || !shell->files, "allocation failed");
+    return (shell);
 }
 
 // next stops at either a space or operater found.

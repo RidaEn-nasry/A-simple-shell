@@ -6,7 +6,7 @@
 /*   By: ren-nasr <ren-nasr@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 17:25:58 by ren-nasr          #+#    #+#             */
-/*   Updated: 2022/05/12 15:59:36 by ren-nasr         ###   ########.fr       */
+/*   Updated: 2022/05/13 15:34:47 by ren-nasr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,32 +70,32 @@ typedef struct s_cmd
 } t_cmd;
 
 typedef struct s_files {
-    char *in;
+    char **in;
     char **out;
 } t_files;
 
-typedef struct s_data {
+typedef struct s_shell {
     t_cmd *cmds;
     char *tokens;
     t_files *files;
-    char *delim;
+    char **delim;
     char **env;
     int last_exit;
-} t_data;
+} t_shell;
 
 // we will tokinze the string like this: 
 
-// t_cmd *add_node(t_data *data, char *cmd_name);
+// t_cmd *add_node(t_shell *data, char *cmd_name);
 
 
 void    skip_space(char *s, size_t *index);
 
-char *cmd_exist(char *cmd);
+char *cmd_exist(char *cmd, char **env);
 
 // Error handling :
 int     exitIF(int , char *);
-void    exit_free_if(int , t_data *, char *);
-void    free_if(int , t_data *, char *);
+void    exit_free_if(int , t_shell *, char *);
+void    free_if(int , t_shell *, char *);
 
 
 
@@ -106,16 +106,15 @@ void    free_if(int , t_data *, char *);
 int getState(char c, char c1);
 
 // lexer handlers
-bool    handle_delim(t_data *data, char *line, size_t *i);
-bool    handle_cmd(t_data *data, char *line, size_t *i);
-bool    handle_app(t_data *data, char *line, size_t *i);
-void    handle_env(t_data *data, char *line, size_t *i);
+bool    delim_in(t_shell *data, char *line, size_t *i);
+bool    handle_cmd(t_shell *data, char *line, size_t *i, char **env);
+bool    append_out(t_shell *data, char *line, size_t *i);
+void    handle_env(t_shell *data, char *line, size_t *i);
 
 // data initialization
-t_data *init_data(t_data *data);
+t_shell *init_data(t_shell *data);
 void next_space(char *s, size_t *index);
 void    next_cmd(char *s, size_t *index);
-size_t  ll_len(t_cmd *);
-
+void	next_op(char *s, size_t *index);
 
 #endif  

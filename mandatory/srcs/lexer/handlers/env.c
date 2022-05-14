@@ -6,32 +6,47 @@
 /*   By: ren-nasr <ren-nasr@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/12 15:11:40 by ren-nasr          #+#    #+#             */
-/*   Updated: 2022/05/12 15:12:00 by ren-nasr         ###   ########.fr       */
+/*   Updated: 2022/05/13 15:34:32 by ren-nasr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+
+/*
+    @description:
+       - this handler is used to handle env variables and $?.
+
+*/
+
 #include <minishell.h>
 
-
-void    handle_env(t_data *data, char *line, size_t *i)
+void    handle_env(t_shell *shell, char *line, size_t *i)
 {
     size_t index;
-    size_t len = ft_doublen((const char **)data->files->out);
+    size_t end;
+    size_t  len;
+
+    if (!shell->env)
+    {
+        shell->env = malloc(sizeof(char *) * 2);
+        len = 0;
+    }
+    else
+        len = ft_doublen((const char **)shell->env);
     index = *i;
     if (line[index] == '$' && line[index + 1] == '?')
     {
-       data->tokens = ft_strjoin(data->tokens, EXIT);
+       shell->tokens = ft_strjoin(shell->tokens, EXIT);
        *i = index + 2;
        return;
     }
-    next_space(line, &index);
-    skip_space(line, &index);
-    size_t end = index;
-    next_space(line, &end);
-    data->env = (char **)ft_doubrealloc((void **)data->env, len + 1);
-    exit_free_if(!data->env, data, "allocation failed");
-    data->env[len] = ft_substr(line, index + 1, end);
-    exit_free_if(!data->env[len], data, "allocation failed");
-    data->tokens = ft_strjoin(data->tokens, VAR);
+    index += 1;
+    end = index;
+    next_op(line, &end);
+    shell->env = (char **)ft_doubrealloc((void **)shell->env, ft_doublen((const char **)shell->env) + 2);
+    shell->env[len] = ft_substr(line, index, end);
+    exit_free_if(!shell->env[len], shell, "allocation failed");
+    shell->env[len + 1] = NULL;
+    shell->tokens = ft_strjoin(shell->tokens, VAR);
+    exit_free_if(!shell->tokens, shell, "allocation failed");
     *i = end;
 }
