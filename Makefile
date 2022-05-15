@@ -6,14 +6,18 @@
 #    By: ren-nasr <ren-nasr@student.1337.ma>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/05/10 16:12:01 by ren-nasr          #+#    #+#              #
-#    Updated: 2022/05/10 16:22:02 by ren-nasr         ###   ########.fr        #
+#    Updated: 2022/05/14 09:58:51 by ren-nasr         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 SRCS = ./mandatory/srcs/lexer/lexer.c\
 		./mandatory/srcs/lexer/errors.c\
 		./mandatory/srcs/lexer/utils.c\
-		./mandatory/srcs/lexer/lexer_handlers.c\
+		./mandatory/srcs/lexer/handlers/cmds.c\
+		./mandatory/srcs/lexer/handlers/delim_in.c\
+		./mandatory/srcs/lexer/handlers/env.c\
+		./mandatory/srcs/lexer/handlers/append_out.c\
+		./mandatory/srcs/lexer/handlers/quote.c
 
 
 
@@ -22,6 +26,8 @@ LIBFT_PATH=./mandatory/utils/libft
 CFLAGS = -Wall -Wextra -Werror -g
 TARGET=minishell
 LINK= -L/usr/lib -lreadline 
+
+
 INC = -I/usr/local/include
 
 OBJS = ${SRCS:.c=.o}
@@ -34,13 +40,12 @@ OBJS_TESTS = ${SRCS_TESTS:.c=.o}
 
 INCL_CHECK = -I/opt/homebrew/Cellar/check/0.15.2/include/
 LIB_CHECK = -L/opt/homebrew/Cellar/check/0.15.2/lib/ -lcheck
-
-
+INCS = -I./mandatory/includes/
 
 #end of tests stuff
 
 %.o: %.c 
-		${CC} ${CFLAGS} ${INC} ${INCL_CHECK} -c $< -o $@
+		${CC} ${CFLAGS} ${INCL_CHECK} ${INCS} -c $< -o $@
 	
 
 all: $(TARGET)
