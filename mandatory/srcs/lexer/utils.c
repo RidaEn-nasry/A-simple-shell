@@ -96,4 +96,3 @@ void next_ope(char *s, size_t *index)
 // create a function to imitate the behavior of switch :
 
 
-

@@ -6,7 +6,7 @@
 /*   By: ren-nasr <ren-nasr@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 17:25:58 by ren-nasr          #+#    #+#             */
-/*   Updated: 2022/05/13 15:34:47 by ren-nasr         ###   ########.fr       */
+/*   Updated: 2022/05/15 10:57:29 by ren-nasr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,15 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdbool.h>
+
+
+/*
+    @IMPORTANT:
+    - if <in> <env> is found, look for file in char **env.
+*/
+// if env found after redirectin look for file from env
+
+
 
 
 // lexer will create tokens of given strings and handle errors on the fly.
@@ -54,6 +63,7 @@
 #define AND "<and> " // &&
 #define OR "<or> " // ||
 
+extern char **envs;
 
 typedef struct s_AST {
     char *token;
@@ -78,10 +88,12 @@ typedef struct s_shell {
     t_cmd *cmds;
     char *tokens;
     t_files *files;
+    
     char **delim;
     char **env;
     int last_exit;
 } t_shell;
+
 
 // we will tokinze the string like this: 
 
@@ -107,14 +119,21 @@ int getState(char c, char c1);
 
 // lexer handlers
 bool    delim_in(t_shell *data, char *line, size_t *i);
-bool    handle_cmd(t_shell *data, char *line, size_t *i, char **env);
+bool    handle_cmd(t_shell *data, char *line, size_t *i);
 bool    append_out(t_shell *data, char *line, size_t *i);
-void    handle_env(t_shell *data, char *line, size_t *i);
+char    *handle_env(t_shell *data, char *line, size_t *i);
+char    *handle_quote(t_shell *data, char *line, size_t *i);
+
 
 // data initialization
 t_shell *init_data(t_shell *data);
 void next_space(char *s, size_t *index);
 void    next_cmd(char *s, size_t *index);
 void	next_op(char *s, size_t *index);
+
+char    *expand_env(t_shell *shell, char *line, size_t *i);
+
+// 
+char	*check_env_file(t_shell *shell, int len);
 
 #endif  

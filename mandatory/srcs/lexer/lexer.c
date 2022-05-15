@@ -6,7 +6,7 @@
 /*   By: ren-nasr <ren-nasr@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 20:38:43 by ren-nasr          #+#    #+#             */
-/*   Updated: 2022/05/14 09:22:06 by ren-nasr         ###   ########.fr       */
+/*   Updated: 2022/05/14 20:21:56 by ren-nasr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,10 @@
 // get the part after <cmd and before >
  
 
+char **envs;
 
-#include "../../includes/minishell.h"
+#include <minishell.h>
+
 /* 
     -> analyzing the problem : 
         - the lexer will take the given string and create tokens out of it.
@@ -77,7 +79,7 @@ int getState(char c, char c1)
         return (0);
     else if (ft_isalnum(c))
         return (1);
-    else if (c == '\'' | c == '"')
+    else if (c == '\'' || c == '"')  
         return (2);
     else if (c == '<' && c1 == '<')
         return (3);
@@ -118,14 +120,18 @@ int getState(char c, char c1)
   
 
 
-void lexer(char *line, char **env)
+void lexer(char *line)
 {
     
     t_shell *shell = NULL;
     shell = init_data(shell);
 
+
+    // char *line;
+    // line = ft_strdup(line);
     
     size_t i = 0;
+    
     while (line[i])
     {
         if (getState(line[i], line[i + 1]) == 0)
@@ -135,12 +141,22 @@ void lexer(char *line, char **env)
         else if (getState(line[i], line[i + 1]) == 1)
         {
             // don't forget to handle flag.
-           if (!handle_cmd(shell, line, &i, env))
+            // printf("%s\n", "command");
+           if (!handle_cmd(shell, line, &i))
                 return;
+            // printf("now i is %zu\n", i);
+            // printf("tokens: %s\n", shell->tokens);
         }
         else if (getState(line[i], line[i + 1]) == 2)
         {
             // handle quote, state 2
+            // printf("line at lexer: %s\n", line);
+            line = handle_quote(shell, line, &i);
+            if (!line)
+                return;
+            // printf("line at lexer: %s\n", line);
+            // printf("now i is %zu\n", i);
+            // if ()
             // if (!handle_quote(shell, line, &i))
             //     return;
         }
@@ -158,10 +174,10 @@ void lexer(char *line, char **env)
         }
         else if (getState(line[i], line[i + 1]) == 5)
         {
+            // handle < , state 5
             
             if (!delim_in(shell, line, &i))
                 return;
-            // handle < , state 5
         }
         else if (getState(line[i], line[i + 1]) == 6)
         {
@@ -205,27 +221,28 @@ void lexer(char *line, char **env)
             handle_env(shell, line, &i);
         }
         else 
-            i++;
+        {
+            free_if(1, shell, "invalid character");
+            return;
+        } 
     }
-    // for (int i = 0; shell->files->out[i]; i++)
-    // {
-    //     printf("%s\n", shell->files->out[i]);
-    // }
-    printf("%s\n", shell->tokens);
+    if (shell->files->in)
+        for (int i = 0; shell->files->in[i]; i++)
+            printf("in: %s\n", shell->files->in[i]);
+    printf("tokens last: %s\n", shell->tokens);
     // printf("len: %zu\n", ft_doublen((const char **)shell->delim));
     // for (int i = 0; shell->delim[i]; i++)
     // {
     //     printf("%s\n", shell->delim[i]);
     // }
     // printf("length: %zu\n", ft_doublen((const char **)shell->files->out));
-
     
-    // t_cmd *cmd = shell->cmds;
-    // while (cmd)
-    // {
-    //     printf("last cmds: %s\n", cmd->cmd);
-    //     cmd = cmd->next;
-    // }
+    t_cmd *cmd = shell->cmds;
+    while (cmd)
+    {
+        printf("last cmds: %s\n", cmd->cmd);
+        cmd = cmd->next;
+    }
     // t_cmd *cmd2 = shell->cmds;
     // while (cmd2)
     // {
@@ -241,28 +258,30 @@ void lexer(char *line, char **env)
     // {
     //     printf("outfiles: %s\n", shell->files->out[i]);
     // }
-    // for (int i = 0; shell->env[i]; i++)
-    // {
-    //     printf("env: %s\n", shell->env[i]);
-    // }
+    for (int i = 0; shell->env[i]; i++)
+    {
+        printf("env: %s\n", shell->env[i]);
+    }
     
 }
 
 int main(int argc, char **argv, char **env)
 {
     char *line;
-    
+
+    envs = env;
     (void)argc;
     (void)argv;
-    (void)env;
     while(1)
     {
         line = readline("$> ");
         if (line == NULL)
             break;
         add_history(line);
-        lexer(line, env);
-        free(line);
+        lexer(line);
+        // free(line);
     }
     return (0);
 }
+
+

@@ -6,7 +6,7 @@
 /*   By: ren-nasr <ren-nasr@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/12 11:27:45 by ren-nasr          #+#    #+#             */
-/*   Updated: 2022/05/14 09:22:51 by ren-nasr         ###   ########.fr       */
+/*   Updated: 2022/05/14 17:46:05 by ren-nasr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,8 @@ void	next_cmd(char *s, size_t *index)
 	size_t	i;
 
 	i = *index;
-	while ((s[i]) && !((s[i] == ' ') || (getState(s[i], s[i + 1]) > 2 \
-		&& (getState(s[i], s[i + 1]) < 10))))
+	while ((s[i]) && !((s[i] == ' ') || (getState(s[i], s[i + 1]) > 1 \
+		&& (getState(s[i], s[i + 1]) < 12))))
 		i++;
 	*index = i;
 }
@@ -92,7 +92,8 @@ char *cmd_exist(char *cmd, char **env)
     int i;
 	char *path;
 	char *cmd_path;
-	
+
+
 	i = 0;	
 	paths = ft_split(ft_getenv(env, "PATH"), ':');
     if (ft_strchr(cmd, '/'))
@@ -118,19 +119,20 @@ char *cmd_exist(char *cmd, char **env)
     return false;
 }
 
-bool	handle_cmd(t_shell *shell, char *line, size_t *i, char **env)
+bool	handle_cmd(t_shell *shell, char *line, size_t *i)
 {
 	char	*tmp;
 	size_t	index;
 	size_t	end;
 	char	**args;
+	extern char	**envs;
 
 	index = *i;
 	end = index;
 	next_cmd(line, &end);
 	tmp = ft_substr(line, index, end);
 	exit_free_if(!tmp, shell, "allocation failed");
-	tmp = cmd_exist(tmp, env);
+	tmp = cmd_exist(tmp, envs);
 	if (!tmp)
 	{
 		free_if(1, shell, "command not found");
@@ -143,5 +145,6 @@ bool	handle_cmd(t_shell *shell, char *line, size_t *i, char **env)
 	shell->tokens = ft_strjoin(shell->tokens, CMD);
 	exit_free_if(!shell->tokens, shell, "allocation failed");
 	*i = index;
+	// printf("i at cmds: %zu\n", *i);
 	return (true);
 }

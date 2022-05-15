@@ -6,7 +6,7 @@
 /*   By: ren-nasr <ren-nasr@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/12 11:53:09 by ren-nasr          #+#    #+#             */
-/*   Updated: 2022/05/13 15:35:53 by ren-nasr         ###   ########.fr       */
+/*   Updated: 2022/05/14 17:58:00 by ren-nasr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ static void    handle_delim(t_shell *shell, char *line, size_t *start, size_t *e
 bool    handle_in(t_shell *shell, char *line, size_t *start, size_t *end)
 {
     int len;
+    extern char **envs;
 
     if (!shell->files->in)
     {
@@ -47,6 +48,16 @@ bool    handle_in(t_shell *shell, char *line, size_t *start, size_t *end)
     exit_free_if(!shell->files->in, shell, "allocation failed");
     shell->files->in[len] = ft_substr(line, *start, *end);
     exit_free_if(!shell->files->in[len], shell, "allocation failed");
+    if (shell->files->in[len][0] == '$')
+    {
+        if (ft_envexist(envs, shell->files->in[len] + 1))
+            shell->files->in[len] = ft_strdup(ft_getenv(envs, shell->files->in[len] + 1));
+        else
+        {
+            free_if(1, shell, "minishell: no such file or directory");
+            return (false);
+        }
+    }
     if (access(shell->files->in[len], F_OK) == -1)
     {
         free_if(1, shell, "file not found");
@@ -70,11 +81,7 @@ bool    delim_in(t_shell *shell, char *line, size_t *i)
     index = *i;
 
     int op_len;
-
-
-    op_len = ft_intternary(line[index] == '<' && line[index + 1] == '<', 2, 1);
-    
-   
+    op_len = ft_intternary(line[index] == '<' && line[index + 1] == '<', 2, 1);   
     index += op_len;
    
     skip_space(line, &index);

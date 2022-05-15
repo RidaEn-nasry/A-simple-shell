@@ -6,7 +6,7 @@
 /*   By: ren-nasr <ren-nasr@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/12 15:11:40 by ren-nasr          #+#    #+#             */
-/*   Updated: 2022/05/13 15:34:32 by ren-nasr         ###   ########.fr       */
+/*   Updated: 2022/05/15 11:02:01 by ren-nasr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,39 +14,69 @@
 /*
     @description:
        - this handler is used to handle env variables and $?.
+       - it returns a new line with the env variable replaced by its value.
 
 */
 
 #include <minishell.h>
+// handle env should check and expand the env variables and return a new line with the expanded env variables.
 
-void    handle_env(t_shell *shell, char *line, size_t *i)
+char    *expand_env(t_shell *shell, char *line, size_t *i)
 {
+    // check if env var exist 
+    // if it exist expand it, create a new line and return it.
+    // if it doesn't exist, display error
+    char    *env_name;
     size_t index;
-    size_t end;
-    size_t  len;
+    extern char **envs;
+    char    *env_value;
+    index = *i;
+    next_cmd(line, &index);
 
-    if (!shell->env)
+    env_name = ft_substr(line, *i, index);
+    if (ft_envexist(envs, env_name))
     {
-        shell->env = malloc(sizeof(char *) * 2);
-        len = 0;
+        env_value = ft_strdup(ft_getenv(envs, env_name));
+        *i = index;
+        return (env_value);
     }
     else
-        len = ft_doublen((const char **)shell->env);
-    index = *i;
-    if (line[index] == '$' && line[index + 1] == '?')
     {
-       shell->tokens = ft_strjoin(shell->tokens, EXIT);
-       *i = index + 2;
-       return;
+        free_if(1, shell, "minishell:\terror:\tinvalid env variable");
+        return NULL;
     }
-    index += 1;
-    end = index;
-    next_op(line, &end);
-    shell->env = (char **)ft_doubrealloc((void **)shell->env, ft_doublen((const char **)shell->env) + 2);
-    shell->env[len] = ft_substr(line, index, end);
-    exit_free_if(!shell->env[len], shell, "allocation failed");
-    shell->env[len + 1] = NULL;
-    shell->tokens = ft_strjoin(shell->tokens, VAR);
-    exit_free_if(!shell->tokens, shell, "allocation failed");
-    *i = end;
+}
+
+
+char    *handle_env(t_shell *shell, char *line, size_t *i)
+{
+    /*
+        check if env variable is valid , if it's expand create a new line and return it.
+        if it's not valid, display error.
+    */
+    (void)shell;
+    char    *env_name;
+    size_t index;
+    extern char **envs;
+    char    *env_value;
+    char    *new_line;
+    
+    index = *i;
+    next_cmd(line, &index);
+    env_name = ft_substr(line, *i, index);
+    printf("env_name: %s\n", env_name);
+    env_value = ft_envexp(envs, env_name);
+
+    if (env_value)
+    { 
+        // create a new line with the env variable replaced by its value.
+        new_line = ft_lineinsert(line, env_value, *i, ft_strlen(env_name));
+        printf("new_line: %s\n", new_line);        
+        exit(0);
+    }
+    
+    return (NULL);
+    // get the env variable name
+
+    // env_name = ft_getenv()
 }

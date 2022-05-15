@@ -6,7 +6,7 @@
 /*   By: ren-nasr <ren-nasr@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/12 11:35:00 by ren-nasr          #+#    #+#             */
-/*   Updated: 2022/05/13 15:35:39 by ren-nasr         ###   ########.fr       */
+/*   Updated: 2022/05/15 09:51:14 by ren-nasr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,16 @@
 
 #include <minishell.h>
 
+
+
 void	next_op(char *s, size_t *index)
 {
 	size_t	i;
 	int		current_state;
-
+	
 	i = *index;
+	if (s[i] == '$')
+		i += 1;
 	current_state = getState(s[i], s[i + 1]);
 	while (s[i] && (getState(s[i], s[i + 1]) == 12 \
 		|| getState(s[i], s[i + 1]) == current_state))
@@ -34,11 +38,41 @@ void	next_op(char *s, size_t *index)
 	*index = i;
 }
 
-bool	validate_file(char *filename, t_shell *shell)
+
+char	*check_env_file(t_shell *shell, int len)
 {
-	if ((access(filename, F_OK) == 0))
+	extern char **envs;
+
+	if (ft_envexist(envs, shell->files->out[len] + 1))
 	{
-		if (access(filename, R_OK) != 0)
+		shell->files->out[len] = ft_strdup(ft_getenv(envs, shell->files->out[len] + 1));
+		return (shell->files->out[len]);
+	}
+	return (NULL);
+}
+
+
+bool	validate_file(t_shell *shell, size_t len)
+{
+
+	if (shell->files->out[len][0] == '"')
+	{	
+	}
+	if (shell->files->out[len][0] == '$')
+	{
+		
+		shell->files->out[len] = check_env_file(shell, len);
+		printf("%s\n", shell->files->out[len]);
+		if (!shell->files->out[len])
+		{
+			free_if(1, shell, "minishell: no such file or directory.\n");
+			return (false);
+		}
+		// check_file_env(shell)
+	}
+	if ((access(shell->files->out[len], F_OK) == 0))
+	{
+		if (access(shell->files->out[len], R_OK) != 0)
 		{
 			free_if(1, shell, "permission denied");
 			return (false);
@@ -46,7 +80,7 @@ bool	validate_file(char *filename, t_shell *shell)
 	}
 	else
 	{
-		if (ft_strlen(filename) == 0 || !ft_validfname(filename))
+		if (ft_strlen(shell->files->out[len]) == 0 || !ft_validfname(shell->files->out[len]))
 		{
 	
 			free_if(1, shell, "invalid file name");
@@ -87,7 +121,7 @@ bool	append_out(t_shell *shell, char *line, size_t *i)
 	exit_free_if(!shell->files->out, shell, "allocation failed");
 	shell->files->out[len] = ft_substr(line, index, end);
 	exit_free_if(!shell->files->out[len], shell, "allocation failed");
-	if (!validate_file(shell->files->out[len], shell))
+	if (!validate_file(shell, len))
 		return (false);
 	shell->tokens = (char *)ft_ternary(op_len == 1, \
 		ft_strjoin(shell->tokens, OUT), ft_strjoin(shell->tokens, APPEND));
