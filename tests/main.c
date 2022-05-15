@@ -19,6 +19,9 @@ Suite *getSuite(char *name)
 {
     if (strcmp(name, "append") == 0)
         return handle_app_suite();
+    if (strcmp(name, "env") == 0)
+        return handle_env_suite();
+
     else 
     {
         printf(" %s: suite Not found\n", name);
@@ -30,6 +33,7 @@ Suite *getSuite(char *name)
 
 int main(int argc, char **argv)
 {
+    (void)argc;
     Suite *suite;
     if (!strcmp(argv[1], "-u"))
     {

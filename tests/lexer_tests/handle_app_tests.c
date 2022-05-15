@@ -6,7 +6,7 @@
 /*   By: ren-nasr <ren-nasr@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/10 14:09:07 by ren-nasr          #+#    #+#             */
-/*   Updated: 2022/05/10 16:40:50 by ren-nasr         ###   ########.fr       */
+/*   Updated: 2022/05/15 12:15:44 by ren-nasr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,43 +16,43 @@
 // basic test 
 START_TEST (test_handle_app_1)
 {
-    int i = 0;
-    t_data *data = NULL;
-    data =  init_data(data);
+    size_t i = 0;
+    t_shell *shell = NULL;
+    shell =  init_data(shell);
     char *input = ">> outfile";
-    handle_app(data, input, &i);
-    ck_assert_str_eq(data->files->out[0], "outfile");
-    ck_assert_str_eq(data->tokens, APPEND);
-    ft_safeFree(input);
+    append_out(shell, input, &i);
+    ck_assert_str_eq(shell->files->out[0], "outfile");
+    ck_assert_str_eq(shell->tokens, APPEND);
+    ft_sfree(input);
     input = ft_strdup(">>outfile");
-    handle_app(data, input, &i);
-    ck_assert_ptr_nonnull(data->files->out);
-    ck_assert_str_eq(data->files->out[0], "outfile");
-    ck_assert_str_eq(data->tokens, APPEND);
-    ft_safeFree(input);
+    append_out(shell, input, &i);
+    ck_assert_ptr_nonnull(shell->files->out);
+    ck_assert_str_eq(shell->files->out[0], "outfile");
+    ck_assert_str_eq(shell->tokens, APPEND);
+    ft_sfree(input);
 }
 
 START_TEST (test_handle_app_2)
 {
-    t_data *data = NULL;
-    data = init_data(data);
+    t_shell *shell = NULL;
+    shell = init_data(shell);
     char *input = ft_strdup(">> outfile >> outfile >> outfile >> outfile >> outfile >> outfile");
-    int i = 0;
-    handle_app(data, input, &i);
-    ck_assert_ptr_nonnull(data->files->out);
+    size_t i = 0;
+    append_out(shell, input, &i);
+    ck_assert_ptr_nonnull(shell->files->out);
     for (int i = 0 ; i < 6; i++)
     {
-        ck_assert_ptr_nonnull(data->files->out[i]);
-        ck_assert_str_eq(data->files->out[i], "outfile");
+        ck_assert_ptr_nonnull(shell->files->out[i]);
+        ck_assert_str_eq(shell->files->out[i], "outfile");
     }
-    ck_assert_ptr_null(data->files->out[6]);
-    size_t len = ft_doublen((const char **)data->files->out);
+    ck_assert_ptr_null(shell->files->out[6]);
+    size_t len = ft_doublen((const char **)shell->files->out);
     
     ck_assert_int_eq(len, 6);
     char *expected_token = "<ap> <ap> <ap> <ap> <ap> <ap>";
-    ck_assert_str_eq(data->tokens, expected_token);
-    ft_safeFree(input);
-    ft_safeFree(expected_token);
+    ck_assert_str_eq(shell->tokens, expected_token);
+    ft_sfree(input);
+    ft_sfree(expected_token);
     
 }
 Suite *handle_app_suite(void)
