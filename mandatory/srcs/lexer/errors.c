@@ -3,44 +3,47 @@
 /*                                                        :::      ::::::::   */
 /*   errors.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ren-nasr <ren-nasr@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: yelgharo <yelgharo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:59:49 by ren-nasr          #+#    #+#             */
-/*   Updated: 2022/05/09 10:06:54 by ren-nasr         ###   ########.fr       */
+/*   Updated: 2022/06/06 10:41:45 by yelgharo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/minishell.h"
+#include <minishell.h>
 
-void    exitFreeIF(int condition, t_data * data,  char *msg)
+void	free_if(int condition, t_shell **shell, char *msg)
 {
-    t_cmd *tmp;
-    int i;
+	t_cmd	*tmp;
+	int		i;
 
-    i = 0;
-    if (condition)
-    {
-        tmp = data->cmds;
-        while (data->cmds)
-        {
-            tmp = data->cmds->next;
-        tmp = data->cmds;
-        data->cmds = data->cmds->next;
-        ft_safeFree(tmp->cmd);
-        while (tmp->args[i])
-        {
-            ft_safeFree(tmp->args[i]);
-            i++;
-        }
-        ft_safeFree(tmp->args);
-        free(tmp);
-    }
-    ft_safeFree(data->tokens);
-    ft_safeFree(data->in);
-    ft_safeFree(data->out);
-    free(data);
-    perror(msg);
-    exit(EXIT_FAILURE);
-    }
+	i = -1;
+	if (condition)
+	{
+		while ((*shell)->cmds)
+		{
+			tmp = (*shell)->cmds;
+			ft_sfree(tmp->cmd);
+			if (tmp->args && tmp->args[0])
+			{
+				while (tmp->args[++i])
+					ft_sfree(tmp->args[i]);
+			}
+			ft_sfree(tmp->args);
+			(*shell)->cmds = (*shell)->cmds->next;
+			ft_sfree(tmp);
+		}
+		unlink((*shell)->tmpfile);
+		if (msg)
+			ft_putendl_fd(msg, 2);
+	}
 }
 
+void	exit_free_if(int condition, t_shell **shell, char *msg)
+{
+	if (condition)
+	{
+		free_if(condition, shell, msg);
+		exit(EXIT_FAILURE);
+	}
+}

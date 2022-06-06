@@ -1,23 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   errors.c                                           :+:      :+:    :+:   */
+/*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ren-nasr <ren-nasr@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: yelgharo <yelgharo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/04/20 17:27:56 by ren-nasr          #+#    #+#             */
-/*   Updated: 2022/04/22 11:25:28 by ren-nasr         ###   ########.fr       */
+/*   Created: 2022/06/01 16:28:35 by ren-nasr          #+#    #+#             */
+/*   Updated: 2022/06/06 02:31:45 by yelgharo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minishell.h"
+#include <minishell.h>
 
-int exitIF(int condition, char *message)
+int	ft_exit(t_shell *shell)
 {
-    if (condition)
-    {
-        perror(message);
-        exit(EXIT_FAILURE);
-    }
-    return (0);
+	if (shell->cmds->args[1])
+		return (1);
+	else
+	{
+		free_if(1, &shell, NULL);
+		exit(EXIT_SUCCESS);
+	}
 }
