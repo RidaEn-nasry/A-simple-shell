@@ -6,7 +6,7 @@
 /*   By: yelgharo <yelgharo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/18 08:49:37 by ren-nasr          #+#    #+#             */
-/*   Updated: 2022/06/06 13:10:24 by yelgharo         ###   ########.fr       */
+/*   Updated: 2022/06/06 17:41:55 by yelgharo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,46 +73,51 @@ static char	**init_args(char *s, size_t *index, char *cmd, size_t *j)
 	return (tmp);
 }
 
-char	*handle_args(t_shell **shell, char *s, size_t *index, char *cmd)
+char	*ft_arg_loop(t_shell **shell, t_arg *arg,char *s)
 {
-	size_t	i;
-	size_t	end;
-	char	**tmp;
-	size_t	j;
-
-	tmp = init_args(s, index, cmd, &j);
-	end = *index;
-	i = *index;
-	while (s[i] && !(s[i] == '|' || s[i] == '<' \
-				|| s[i] == '>' || s[i] == '&'))
-	{
-		tmp = (char **)ft_doubrealloc((void **)tmp, j + 1);
-		exit_free_if(!tmp, shell, "minishell:\terror:\tallocation failed");
-		if (s[i] == '$' && s[i + 1] && s[i + 1] == '?')
+	arg->tmp = (char **)ft_doubrealloc((void **)arg->tmp, arg->j + 1);
+		exit_free_if(!arg->tmp, shell, "minishell:\terror:\tallocation failed");
+		if (s[arg->i] == '$' && s[arg->i + 1] && s[arg->i + 1] == '?')
 		{
 			(*shell)->status = 1;
-			i += 2;
+			arg->i += 2;
 		}
-		if (s[i] == '$' || s[i] == '\'' || s[i] == '"')
+		if (s[arg->i] == '$' || s[arg->i] == '\'' || s[arg->i] == '"')
 		{
-			s = check_args(shell, s, &i, &tmp[j]);
+			s = check_args(shell, s, &arg->i, &arg->tmp[arg->j]);
 			if (!s)
 				return (NULL);
-			j++;
+			arg->j++;
 		}
 		else
 		{
-			end = i;
-			next(s, &i);
-			tmp[j] = ft_substr(s, end, i);
-			exit_free_if(!tmp[j], shell, "minishell:\terror:\tallocation failed");
-			j++;
+			arg->end = arg->i;
+			next(s, &arg->i);
+			arg->tmp[arg->j] = ft_substr(s, arg->end, arg->i);
+			exit_free_if(!arg->tmp[arg->j], shell, "minishell:\terror:\tallocation failed");
+			arg->j++;
 		}
-		if (ft_isspace(s[i]))
-			skip_space(s, &i);
-		end = i;
+		if (ft_isspace(s[arg->i]))
+			skip_space(s, &arg->i);
+		arg->end = arg->i;
+		return (s);
+}
+
+char	*handle_args(t_shell **shell, char *s, size_t *index, char *cmd)
+{
+	t_arg	arg;
+
+	arg.tmp = init_args(s, index, cmd, &arg.j);
+	arg.end = *index;
+	arg.i = *index;
+	while (s[arg.i] && !(s[arg.i] == '|' || s[arg.i] == '<' \
+				|| s[arg.i] == '>' || s[arg.i] == '&'))
+	{
+		s = ft_arg_loop(shell, &arg, s);
+		if (!s)
+			return (NULL);
 	}
-	*index = i;
-	(*shell)->cmds = add_node(shell, cmd, tmp);
+	*index = arg.i;
+	(*shell)->cmds = add_node(shell, cmd, arg.tmp);
 	return (s);
 }

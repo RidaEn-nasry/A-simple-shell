@@ -6,7 +6,7 @@
 /*   By: yelgharo <yelgharo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 20:38:43 by ren-nasr          #+#    #+#             */
-/*   Updated: 2022/06/06 10:50:44 by yelgharo         ###   ########.fr       */
+/*   Updated: 2022/06/06 16:57:20 by yelgharo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,10 +49,7 @@ bool	loop(t_shell *shell)
 		init_shell(&shell);
 		var.line = readline("$> ");
 		if (!var.line)
-		{
-			rl_redisplay();
-			continue ;
-		}
+			exit_free_if(1, &shell, NULL);
 		if (!ft_strlen(var.line) || ft_sisspace(var.line))
 			continue ;
 		add_history(var.line);
@@ -67,6 +64,13 @@ bool	loop(t_shell *shell)
 	return (true);
 }
 
+
+void	sig_slash(int sig)
+{
+	(void)sig;
+	rl_redisplay();
+}
+
 int	main(int argc, char **argv, char **env)
 {
 	t_shell	*shell;
@@ -77,7 +81,7 @@ int	main(int argc, char **argv, char **env)
 	exit_free_if(!shell, &shell, "minishell:\terror:\tallocation failed");
 	shell->env = ft_doubdup(env);
 	shell->tmpfile = ft_strdup("/tmp/minishell.tmp");
-	signal(SIGQUIT, exit);
+	signal(SIGQUIT, sig_slash);
 	signal(SIGINT, sigint_handler);
 	loop(shell);
 	return (0);

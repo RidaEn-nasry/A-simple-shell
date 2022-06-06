@@ -6,7 +6,7 @@
 #    By: yelgharo <yelgharo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/05/10 16:12:01 by ren-nasr          #+#    #+#              #
-#    Updated: 2022/06/06 16:12:52 by yelgharo         ###   ########.fr        #
+#    Updated: 2022/06/06 17:15:23 by yelgharo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -62,7 +62,6 @@ LIB_CHECK = -L/opt/homebrew/Cellar/check/0.15.2/lib/ -lcheck
 
 INCS = -I./mandatory/includes/
 
-#end of tests stuff
 
 %.o: %.c 
 		${CC} ${CFLAGS} ${INCL_CHECK} ${INCS} -c $< -o $@

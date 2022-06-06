@@ -6,7 +6,7 @@
 /*   By: yelgharo <yelgharo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 17:25:58 by ren-nasr          #+#    #+#             */
-/*   Updated: 2022/06/06 15:59:26 by yelgharo         ###   ########.fr       */
+/*   Updated: 2022/06/06 17:23:51 by yelgharo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,13 @@ typedef struct s_var {
 	size_t	len;
 	int		op_len;
 }	t_var;
+
+typedef struct s_arg {
+	size_t	i;
+	size_t	end;
+	char	**tmp;
+	size_t	j;
+}	t_arg;
 
 t_cmd	*add_node(t_shell **shell, char *name, char **args);
 char	*ft_delim_if(t_shell *shell, t_var *var, char *tmp);
