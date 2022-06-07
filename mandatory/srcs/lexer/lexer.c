@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yelgharo <yelgharo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ren-nasr <ren-nasr@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 20:38:43 by ren-nasr          #+#    #+#             */
-/*   Updated: 2022/06/06 16:57:20 by yelgharo         ###   ########.fr       */
+/*   Updated: 2022/06/06 21:18:03 by ren-nasr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,10 +64,10 @@ bool	loop(t_shell *shell)
 	return (true);
 }
 
-
 void	sig_slash(int sig)
 {
 	(void)sig;
+	rl_replace_line("", 0);
 	rl_redisplay();
 }
 

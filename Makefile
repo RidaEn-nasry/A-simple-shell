@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: yelgharo <yelgharo@student.42.fr>          +#+  +:+       +#+         #
+#    By: ren-nasr <ren-nasr@student.1337.ma>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/05/10 16:12:01 by ren-nasr          #+#    #+#              #
-#    Updated: 2022/06/06 17:15:23 by yelgharo         ###   ########.fr        #
+#    Updated: 2022/06/06 18:03:10 by ren-nasr         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -47,7 +47,7 @@ CFLAGS = -Wall -Wextra -Werror -g
 
 TARGET=minishell
 
-LINK= -L/usr/lib -lreadline 
+LINK= §-L/opt/homebrew/Cellar/readline/8.1.2/lib/ -L/opt/homebrew/Cellar/readline/8.1.2/lib/ -lreadline
 
 
 INC = -I/usr/local/include 
@@ -60,7 +60,7 @@ INCL_CHECK = -I/opt/homebrew/Cellar/check/0.15.2/include/
 
 LIB_CHECK = -L/opt/homebrew/Cellar/check/0.15.2/lib/ -lcheck
 
-INCS = -I./mandatory/includes/
+INCS = -I./mandatory/includes/ 
 
 
 %.o: %.c 
